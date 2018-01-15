@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="32"
+   height="32"
+   viewBox="0 0 32 32.000001"
+   id="svg3379"
+   version="1.1"
+   inkscape:version="0.91 r13725"
+   sodipodi:docname="Caffeine.svg">
+  <title
+     id="title3389">Caffeine</title>
+  <defs
+     id="defs3381">
+    <linearGradient
+       inkscape:collect="always"
+       id="eye">
+      <stop
+         style="stop-color:#ffffff;stop-opacity:1"
+         offset="0"
+         id="stop4250" />
+      <stop
+         id="stop4258"
+         offset="0.88082504"
+         style="stop-color:#ff7192;stop-opacity:1" />
+      <stop
+         style="stop-color:#ff0000;stop-opacity:1"
+         offset="1"
+         id="stop4252" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       id="face">
+      <stop
+         style="stop-color:#f6f600;stop-opacity:1"
+         offset="0"
+         id="stop4195" />
+      <stop
+         id="stop4203"
+         offset="0.84820455"
+         style="stop-color:#f0e600;stop-opacity:1" />
+      <stop
+         style="stop-color:#f0c400;stop-opacity:1"
+         offset="1"
+         id="stop4197" />
+    </linearGradient>
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#face"
+       id="radialGradient4199"
+       cx="14.918338"
+       cy="1037.4437"
+       fx="14.918338"
+       fy="1037.4437"
+       r="14.977077"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.9402146,0.00545293,-0.00545291,0.94021235,6.6865151,61.807447)" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#eye"
+       id="radialGradient4254"
+       cx="8.0207882"
+       cy="1033.2449"
+       fx="8.0207882"
+       fy="1033.2449"
+       r="3.9584527"
+       gradientTransform="matrix(0.8603983,1.7208012,-2.0209831,1.0104891,2090.2694,-26.522729)"
+       gradientUnits="userSpaceOnUse" />
+    <radialGradient
+       inkscape:collect="always"
+       xlink:href="#eye"
+       id="radialGradient4334"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.8603983,1.7208012,-2.0209831,1.0104891,2090.2694,-26.522729)"
+       cx="8.0207882"
+       cy="1033.2449"
+       fx="8.0207882"
+       fy="1033.2449"
+       r="3.9584527" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="21.8125"
+     inkscape:cx="19.029384"
+     inkscape:cy="17.188815"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer3"
+     showgrid="true"
+     units="px"
+     inkscape:window-width="1440"
+     inkscape:window-height="897"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3387" />
+    <sodipodi:guide
+       position="8,10"
+       orientation="0,1"
+       id="guide4227" />
+    <sodipodi:guide
+       position="7,20.000001"
+       orientation="1,0"
+       id="guide4229" />
+    <sodipodi:guide
+       position="23,15"
+       orientation="1,0"
+       id="guide4231" />
+    <sodipodi:guide
+       position="11,20.000001"
+       orientation="0,1"
+       id="guide4233" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata3384">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Caffeine</dc:title>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Heath Stewart</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/by/3.0/" />
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/by/3.0/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Notice" />
+        <cc:requires
+           rdf:resource="http://creativecommons.org/ns#Attribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Head"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1020.3621)"
+     style="display:inline">
+    <circle
+       style="fill:url(#radialGradient4199);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       id="path4191"
+       cx="15.055875"
+       cy="1037.3062"
+       r="14.477841" />
+    <g
+       inkscape:groupmode="layer"
+       id="layer2"
+       inkscape:label="Asleep"
+       style="display:inline">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 7,1042.3621 c 0,0 8,4 16,0"
+         id="asleepMouth"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 6.8252149,1032.1873 c 0,0 3.0000001,2 6.0000001,0"
+         id="asleepLeft"
+         inkscape:connector-curvature="0" />
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 17.260736,1032.1873 c 0,0 3,2 6,0"
+         id="asleepRight"
+         inkscape:connector-curvature="0" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:10px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="20.065901"
+         y="1040.0669"
+         id="asleepLowerZ"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4237"
+           x="20.065901"
+           y="1040.0669">z</tspan></text>
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:17.5px;line-height:125%;font-family:sans-serif;-inkscape-font-specification:'sans-serif, Bold';text-align:start;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+         x="22.237822"
+         y="1030.0956"
+         id="asleepUpperZ"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan4241"
+           x="22.237822"
+           y="1030.0956">z</tspan></text>
+    </g>
+    <g
+       inkscape:groupmode="layer"
+       id="layer3"
+       inkscape:label="Awake"
+       style="display:none">
+      <path
+         style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         d="m 7,1042.3621 c 0,0 4,3 8,0 4,-3 8,0 8,0"
+         id="awakeMouth"
+         inkscape:connector-curvature="0" />
+      <g
+         style="display:inline"
+         inkscape:label="#awakeRight"
+         id="awakeRight"
+         transform="matrix(-1,0,0,1,30.040117,0)">
+        <ellipse
+           style="display:inline;fill:url(#radialGradient4334);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+           id="awakeRightEye"
+           ry="2.9999607"
+           rx="3.4584527"
+           cy="1032.3621"
+           cx="10" />
+        <circle
+           style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+           id="awakeRightPupil"
+           cx="10.623209"
+           cy="1032.7733"
+           r="0.95844811"
+           inkscape:label="#awakeRightPupil" />
+        <path
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1"
+           d="m 7,1036.3621 c 0,0 3,2 6,0"
+           id="awakeRightBags"
+           inkscape:connector-curvature="0" />
+      </g>
+      <g
+         style="display:inline"
+         id="awakeLeft"
+         inkscape:label="#awakeLeft">
+        <ellipse
+           cx="10"
+           cy="1032.3621"
+           rx="3.4584527"
+           ry="2.9999607"
+           id="awakeLeftEye"
+           style="display:inline;fill:url(#radialGradient4254);fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        <circle
+           r="0.95844811"
+           cy="1032.7733"
+           cx="10.623209"
+           id="awakeLeftPupil"
+           style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+        <path
+           inkscape:connector-curvature="0"
+           id="awakeLeftBags"
+           d="m 7,1036.3621 c 0,0 3,2 6,0"
+           style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:round;stroke-linejoin:miter;stroke-opacity:1" />
+      </g>
+    </g>
+  </g>
+</svg>
