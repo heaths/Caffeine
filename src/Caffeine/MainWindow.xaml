@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:Caffeine.ViewModels"
         xmlns:local="clr-namespace:Caffeine"
         mc:Ignorable="d"
-        Title="{Binding Title, Mode=OneWay}" ResizeMode="CanMinimize" ShowActivated="False" SizeToContent="WidthAndHeight" Background="{DynamicResource Background}" WindowStyle="ToolWindow" Topmost="{Binding TopMost}">
+        Title="{Binding Title, Mode=OneWay}" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" Background="{DynamicResource Background}" Topmost="{Binding TopMost}">
     <Window.DataContext>
         <vm:MainViewModel/>
     </Window.DataContext>

@@ -10,12 +10,14 @@ namespace Caffeine
     using System.Threading;
     using System.Windows;
     using System.Windows.Interop;
+    using Caffeine.ViewModels;
 
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly MainViewModel viewModel;
         private WindowInteropHelper helper;
 
         /// <summary>
@@ -25,6 +27,7 @@ namespace Caffeine
         public MainWindow()
         {
             InitializeComponent();
+            viewModel = DataContext as MainViewModel;
         }
 
         /// <summary>
@@ -32,5 +35,12 @@ namespace Caffeine
         /// </summary>
         [ExcludeFromCodeCoverage]
         internal IntPtr Handle => LazyInitializer.EnsureInitialized(ref helper, () => new WindowInteropHelper(this)).Handle;
+
+        /// <inheritdoc/>
+        protected override void OnClosed(EventArgs e)
+        {
+            base.OnClosed(e);
+            viewModel?.Dispose();
+        }
     }
 }
