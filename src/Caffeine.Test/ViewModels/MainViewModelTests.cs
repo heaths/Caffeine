@@ -6,6 +6,11 @@
 namespace Caffeine.ViewModels
 {
     using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Threading.Tasks;
+    using System.Windows;
+    using System.Windows.Threading;
     using Moq;
     using Xunit;
 
@@ -26,6 +31,28 @@ namespace Caffeine.ViewModels
         }
 
         private ISystemService Service => mockSystemService.Object;
+
+        [Fact]
+        public void New_SystemServices_Null_Throws()
+        {
+            Assert.Throws<ArgumentNullException>("systemService", () => new MainViewModel(null));
+        }
+
+        [Fact]
+        public void New_Sets_Shutdown_Priority()
+        {
+            var sut = new MainViewModel(Service);
+            mockSystemService.Verify(x => x.SetShutdownParameters(0x3ff));
+        }
+
+        [Fact]
+        public void New_Shutdown_Priority_Failure()
+        {
+            mockSystemService.Setup(x => x.SetShutdownParameters(It.IsAny<int>()))
+                .Throws<Win32Exception>();
+
+            new MainViewModel(Service);
+        }
 
         [Fact]
         public void DisplayRequired_Creates_PowerRequest()
@@ -102,6 +129,92 @@ namespace Caffeine.ViewModels
         }
 
         [Fact]
+        public void SuspendShutdown_PropertyChanged()
+        {
+            var sut = new MainViewModel(Service);
+            Assert.False(sut.SuspendShutdown);
+
+            Assert.PropertyChanged(sut, nameof(sut.SuspendShutdown), () => sut.SuspendShutdown = true);
+            Assert.True(sut.SuspendShutdown);
+        }
+
+        [Fact]
+        public void SuspendShutdown_Changes_ShutdownVisibility()
+        {
+            var sut = new MainViewModel(Service);
+            Assert.Equal(Visibility.Collapsed, sut.ShutdownVisibility);
+
+            Assert.PropertyChanged(sut, nameof(sut.ShutdownVisibility), () => sut.SuspendShutdown = true);
+            Assert.Equal(Visibility.Visible, sut.ShutdownVisibility);
+        }
+
+        [Fact]
+        public void SuspendShutdown_Changes_CountdownVisibility()
+        {
+            var sut = new MainViewModel(Service);
+            Assert.Equal(Visibility.Collapsed, sut.CountdownVisibility);
+
+            Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.SuspendShutdown = true);
+            Assert.Equal(Visibility.Visible, sut.CountdownVisibility);
+        }
+
+        [Fact]
+        public void CancelShutdown_PropertyChanged()
+        {
+            var sut = new MainViewModel(Service);
+            Assert.False(sut.CancelShutdown);
+
+            Assert.PropertyChanged(sut, nameof(sut.CancelShutdown), () => sut.CancelShutdown = true);
+            Assert.True(sut.CancelShutdown);
+        }
+
+        [Fact]
+        public void CancelShutdown_Changes_CountdownVisibility()
+        {
+            var sut = new MainViewModel(Service)
+            {
+                SuspendShutdown = true,
+            };
+            Assert.Equal(Visibility.Visible, sut.CountdownVisibility);
+
+            Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.CancelShutdown = true);
+            Assert.Equal(Visibility.Collapsed, sut.CountdownVisibility);
+        }
+
+        [WpfFact]
+        public async Task Countdown_Changes()
+        {
+            mockSystemService.SetupSequence(x => x.Ticks)
+                .Returns(1000)
+                .Returns(2000);
+            mockSystemService.Setup(x => x.GetLastInput())
+                .Returns(1000);
+
+            var ticks = new List<TimeSpan>();
+
+            var sut = new MainViewModel(Service, Dispatcher.CurrentDispatcher)
+            {
+                Duration = TimeSpan.FromSeconds(1),
+            };
+
+            sut.PropertyChanged += (source, args) =>
+            {
+                if ("Countdown".Equals(args.PropertyName))
+                {
+                    ticks.Add(sut.Countdown);
+                }
+            };
+
+            sut.SuspendShutdown = true;
+            await sut.WaitAsync();
+
+            Assert.Collection(
+                ticks,
+                x => Assert.Equal(TimeSpan.FromSeconds(1), x),
+                x => Assert.Equal(TimeSpan.FromSeconds(0), x));
+        }
+
+        [Fact]
         public void TopMost_PropertyChanged()
         {
             var sut = new MainViewModel(Service);
@@ -123,6 +236,58 @@ namespace Caffeine.ViewModels
             sut.Dispose();
             Assert.True(sut.IsDisposed);
             mockPowerRequestDisposable.Verify(x => x.Dispose(), Times.Once);
+        }
+
+        [Fact]
+        public void ProcessMessage_Handled()
+        {
+            const int WM_QUERYENDSESSION = 0x0011;
+
+            var sut = new MainViewModel(Service)
+            {
+                SuspendShutdown = true,
+            };
+
+            var handled = false;
+            var actual = sut.ProcessMessage(IntPtr.Zero, WM_QUERYENDSESSION, IntPtr.Zero, IntPtr.Zero, ref handled);
+
+            Assert.Equal(IntPtr.Zero, actual);
+            Assert.True(handled);
+        }
+
+        [Fact]
+        public void ProcessMessage_Critical()
+        {
+            const int WM_QUERYENDSESSION = 0x0011;
+            const int ENDSESSION_CRITICAL = 0x40000000;
+
+            var sut = new MainViewModel(Service)
+            {
+                SuspendShutdown = true,
+            };
+
+            var handled = false;
+            var actual = sut.ProcessMessage(IntPtr.Zero, WM_QUERYENDSESSION, IntPtr.Zero, new IntPtr(ENDSESSION_CRITICAL), ref handled);
+
+            Assert.Equal(IntPtr.Zero, actual);
+            Assert.False(handled);
+        }
+
+        [Fact]
+        public void ProcessMessage_Unhandled()
+        {
+            const int WM_ENDSESSION = 0x0016;
+
+            var sut = new MainViewModel(Service)
+            {
+                SuspendShutdown = true,
+            };
+
+            var handled = false;
+            var actual = sut.ProcessMessage(IntPtr.Zero, WM_ENDSESSION, IntPtr.Zero, IntPtr.Zero, ref handled);
+
+            Assert.Equal(IntPtr.Zero, actual);
+            Assert.False(handled);
         }
     }
 }

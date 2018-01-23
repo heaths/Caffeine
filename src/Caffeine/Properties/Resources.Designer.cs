@@ -61,6 +61,15 @@ namespace Caffeine.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Cancel shutdown.
+        /// </summary>
+        internal static string CancelShutdownCaption {
+            get {
+                return ResourceManager.GetString("CancelShutdownCaption", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Keep display awake.
         /// </summary>
         internal static string DisplayRequiredCaption {
@@ -84,6 +93,15 @@ namespace Caffeine.Properties {
         internal static string PowerRequestReason {
             get {
                 return ResourceManager.GetString("PowerRequestReason", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Suspend shutdown.
+        /// </summary>
+        internal static string SuspendShutdownCaption {
+            get {
+                return ResourceManager.GetString("SuspendShutdownCaption", resourceCulture);
             }
         }
         

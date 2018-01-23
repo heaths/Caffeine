@@ -68,6 +68,9 @@
     </ApplicationDefinition>
     <Compile Include="BindableObject.cs" />
     <Compile Include="Validate.cs" />
+    <Compile Include="ViewModels\ShutdownBlockReason.cs" />
+    <Compile Include="ViewModels\TimerEventArgs.cs" />
+    <Compile Include="ViewModels\IdleService.cs" />
     <Compile Include="ViewModels\IPowerRequest.cs" />
     <Compile Include="ViewModels\ISystemService.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />

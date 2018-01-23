@@ -1,20 +1,21 @@
-﻿<Window x:Class="Caffeine.MainWindow"
+﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:Caffeine.ViewModels"
         xmlns:local="clr-namespace:Caffeine"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" x:Class="Caffeine.MainWindow"
         mc:Ignorable="d"
         Title="{Binding Title, Mode=OneWay}" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight" Background="{DynamicResource Background}" Topmost="{Binding TopMost}">
-    <Window.DataContext>
-        <vm:MainViewModel/>
-    </Window.DataContext>
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary x:Name="Theme" Source="Resources\LightResources.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+            <System:Double x:Key="IconWidth">32</System:Double>
+            <Thickness x:Key="IconMargin">32,0,0,0</Thickness>
+            <Thickness x:Key="Padding">16</Thickness>
             <Style x:Key="CaffeineCheckBox" TargetType="{x:Type CheckBox}">
                 <Setter Property="FontSize" Value="20"/>
                 <Setter Property="Margin" Value="0,4,0,0"/>
@@ -23,12 +24,12 @@
                         <ControlTemplate TargetType="{x:Type CheckBox}">
                             <BulletDecorator Background="Transparent">
                                 <BulletDecorator.Bullet>
-                                    <Canvas Width="32" Height="32">
-                                        <Canvas.RenderTransform>
-                                            <TranslateTransform X="0" Y="0"/>
-                                        </Canvas.RenderTransform>
+                                    <Canvas Height="{DynamicResource IconWidth}" Width="{DynamicResource IconWidth}">
                                         <Canvas.Resources>
                                             <RadialGradientBrush x:Key="face" MappingMode="Absolute" Center="15,1037" GradientOrigin="15,1037" RadiusX="14.977077" RadiusY="14.977077">
+                                                <RadialGradientBrush.Transform>
+                                                    <MatrixTransform Matrix="0.9402146 0.00545293 -0.00545291 0.94021235 6.6865151 61.807447"/>
+                                                </RadialGradientBrush.Transform>
                                                 <RadialGradientBrush.GradientStops>
                                                     <GradientStopCollection>
                                                         <GradientStop Color="#FFF6F600" Offset="0"/>
@@ -36,11 +37,11 @@
                                                         <GradientStop Color="#FFF0C400" Offset="1"/>
                                                     </GradientStopCollection>
                                                 </RadialGradientBrush.GradientStops>
-                                                <RadialGradientBrush.Transform>
-                                                    <MatrixTransform Matrix="0.9402146 0.00545293 -0.00545291 0.94021235 6.6865151 61.807447"/>
-                                                </RadialGradientBrush.Transform>
                                             </RadialGradientBrush>
                                             <RadialGradientBrush x:Key="eye" MappingMode="Absolute" Center="8,1033" GradientOrigin="8,1033" RadiusX="3.9584527" RadiusY="3.9584527">
+                                                <RadialGradientBrush.Transform>
+                                                    <MatrixTransform Matrix="0.8603983 1.7208012 -2.0209831 1.0104891 2090.2694 -26.522729"/>
+                                                </RadialGradientBrush.Transform>
                                                 <RadialGradientBrush.GradientStops>
                                                     <GradientStopCollection>
                                                         <GradientStop Color="#FFFFFFFF" Offset="0"/>
@@ -48,61 +49,57 @@
                                                         <GradientStop Color="#FFFF0000" Offset="1"/>
                                                     </GradientStopCollection>
                                                 </RadialGradientBrush.GradientStops>
-                                                <RadialGradientBrush.Transform>
-                                                    <MatrixTransform Matrix="0.8603983 1.7208012 -2.0209831 1.0104891 2090.2694 -26.522729"/>
-                                                </RadialGradientBrush.Transform>
                                             </RadialGradientBrush>
                                         </Canvas.Resources>
+                                        <Canvas.RenderTransform>
+                                            <TranslateTransform X="0" Y="0"/>
+                                        </Canvas.RenderTransform>
                                         <Canvas>
                                             <Canvas.RenderTransform>
                                                 <TranslateTransform X="0" Y="-1020.3621"/>
                                             </Canvas.RenderTransform>
-                                            <Ellipse Canvas.Left="0.6" Canvas.Top="1022.8" Width="29" Height="29" Name="path4191" Fill="{StaticResource face}" StrokeThickness="1" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
-                                            <Canvas Name="asleep">
-                                                <Path Name="asleepMouth" StrokeThickness="2" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                            <Ellipse Canvas.Left="0.6" Canvas.Top="1022.8" Width="29" Height="29" x:Name="path4191" Fill="{StaticResource face}" StrokeThickness="1" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                                            <Canvas x:Name="asleep">
+                                                <Path x:Name="asleepMouth" StrokeThickness="2" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                     <Path.Data>
                                                         <PathGeometry Figures="m 7 1042.3621 c 0 0 8 4 16 0" FillRule="evenodd"/>
                                                     </Path.Data>
                                                 </Path>
-                                                <Path Name="asleepLeft" StrokeThickness="1.5" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                <Path x:Name="asleepLeft" StrokeThickness="1.5" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                     <Path.Data>
                                                         <PathGeometry Figures="m 6.8252149 1032.1873 c 0 0 3.0000001 2 6.0000001 0" FillRule="evenodd"/>
                                                     </Path.Data>
                                                 </Path>
-                                                <Path Name="asleepRight" StrokeThickness="1.5" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                <Path x:Name="asleepRight" StrokeThickness="1.5" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                     <Path.Data>
                                                         <PathGeometry Figures="m 17.260736 1032.1873 c 0 0 3 2 6 0" FillRule="evenodd"/>
                                                     </Path.Data>
                                                 </Path>
-                                                <TextBlock FontSize="10" FontWeight="Bold" FontFamily="sans-serif" FontStyle="normal" Foreground="#FF000000" Canvas.Left="20.065901" Canvas.Top="1030.0669" Name="asleepLowerZ">
-                                                    <Span FontSize="10">z</Span>
-                                                </TextBlock>
-                                                <TextBlock FontSize="17.5" FontWeight="Bold" FontFamily="sans-serif" FontStyle="normal" Foreground="#FF000000" Canvas.Left="22.237822" Canvas.Top="1012.5956" Name="asleepUpperZ">
-                                                    <Span FontSize="17.5">z</Span>
-                                                </TextBlock>
+                                                <TextBlock FontSize="10" FontWeight="Bold" FontFamily="sans-serif" FontStyle="normal" Foreground="#FF000000" Canvas.Left="20.065901" Canvas.Top="1030.0669" x:Name="asleepLowerZ"><Span FontSize="10"><Run Text="z"/></Span></TextBlock>
+                                                <TextBlock FontSize="17.5" FontWeight="Bold" FontFamily="sans-serif" FontStyle="normal" Foreground="#FF000000" Canvas.Left="22.237822" Canvas.Top="1012.5956" x:Name="asleepUpperZ"><Span FontSize="17.5"><Run Text="z"/></Span></TextBlock>
                                             </Canvas>
-                                            <Canvas Name="awake" Visibility="Collapsed">
-                                                <Path Name="awakeMouth" StrokeThickness="2" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                            <Canvas x:Name="awake" Visibility="Collapsed">
+                                                <Path x:Name="awakeMouth" StrokeThickness="2" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                     <Path.Data>
                                                         <PathGeometry Figures="m 7 1042.3621 c 0 0 4 3 8 0 4 -3 8 0 8 0" FillRule="evenodd"/>
                                                     </Path.Data>
                                                 </Path>
-                                                <Canvas Name="awakeRight">
+                                                <Canvas x:Name="awakeRight">
                                                     <Canvas.RenderTransform>
                                                         <MatrixTransform Matrix="-1 0 0 1 30.040117 0"/>
                                                     </Canvas.RenderTransform>
-                                                    <Ellipse Canvas.Left="6.5" Width="6.9" Canvas.Top="1029.4" Height="6" Name="awakeRightEye" Fill="{StaticResource eye}" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
-                                                    <Ellipse Canvas.Left="9.7" Canvas.Top="1031.8" Width="1.9" Height="1.9" Name="awakeRightPupil" Fill="#FF000000" StrokeThickness="0" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
-                                                    <Path Name="awakeRightBags" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                    <Ellipse Canvas.Left="6.5" Width="6.9" Canvas.Top="1029.4" Height="6" x:Name="awakeRightEye" Fill="{StaticResource eye}" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                                                    <Ellipse Canvas.Left="9.7" Canvas.Top="1031.8" Width="1.9" Height="1.9" x:Name="awakeRightPupil" Fill="#FF000000" StrokeThickness="0" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                                                    <Path x:Name="awakeRightBags" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                         <Path.Data>
                                                             <PathGeometry Figures="m 7 1036.3621 c 0 0 3 2 6 0" FillRule="evenodd"/>
                                                         </Path.Data>
                                                     </Path>
                                                 </Canvas>
-                                                <Canvas Name="awakeLeft">
-                                                    <Ellipse Canvas.Left="6.5" Width="6.9" Canvas.Top="1029.4" Height="6" Name="awakeLeftEye" Fill="{StaticResource eye}" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
-                                                    <Ellipse Canvas.Left="9.7" Canvas.Top="1031.8" Width="1.9" Height="1.9" Name="awakeLeftPupil" Fill="#FF000000" StrokeThickness="0" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
-                                                    <Path Name="awakeLeftBags" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
+                                                <Canvas x:Name="awakeLeft">
+                                                    <Ellipse Canvas.Left="6.5" Width="6.9" Canvas.Top="1029.4" Height="6" x:Name="awakeLeftEye" Fill="{StaticResource eye}" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                                                    <Ellipse Canvas.Left="9.7" Canvas.Top="1031.8" Width="1.9" Height="1.9" x:Name="awakeLeftPupil" Fill="#FF000000" StrokeThickness="0" Stroke="#FF000000" StrokeMiterLimit="4" StrokeLineJoin="Miter" StrokeStartLineCap="Flat" StrokeEndLineCap="Flat"/>
+                                                    <Path x:Name="awakeLeftBags" StrokeThickness="1" Stroke="#FF000000" StrokeLineJoin="Miter" StrokeStartLineCap="Round" StrokeEndLineCap="Round">
                                                         <Path.Data>
                                                             <PathGeometry Figures="m 7 1036.3621 c 0 0 3 2 6 0" FillRule="evenodd"/>
                                                         </Path.Data>
@@ -126,9 +123,17 @@
             </Style>
         </ResourceDictionary>
     </Window.Resources>
+    <Window.DataContext>
+        <vm:MainViewModel/>
+    </Window.DataContext>
     <StackPanel HorizontalAlignment="Left" Margin="{DynamicResource Padding}">
         <CheckBox Content="{Binding DisplayRequiredCaption, Mode=OneWay}" IsChecked="{Binding DisplayRequired}" Style="{StaticResource CaffeineCheckBox}"/>
         <CheckBox Content="{Binding SystemRequiredCaption, Mode=OneWay}" IsChecked="{Binding SystemRequired}" Style="{StaticResource CaffeineCheckBox}"/>
+        <CheckBox Content="{Binding SuspendShutdownCaption, Mode=OneWay}" IsChecked="{Binding SuspendShutdown}" Style="{StaticResource CaffeineCheckBox}"/>
+        <StackPanel Visibility="{Binding ShutdownVisibility, Mode=OneWay}">
+            <CheckBox Margin="{DynamicResource IconMargin}" Content="{Binding CancelShutdownCaption, Mode=OneWay}" IsChecked="{Binding CancelShutdown}"/>
+            <Label FontSize="40" HorizontalAlignment="Center" Content="{Binding CountdownFormatted, Mode=OneWay}" Visibility="{Binding CountdownVisibility, Mode=OneWay}"/>
+        </StackPanel>
         <CheckBox Content="{Binding TopMostCaption, Mode=OneWay}" IsChecked="{Binding TopMost}" Margin="0,8,0,0"/>
     </StackPanel>
 </Window>

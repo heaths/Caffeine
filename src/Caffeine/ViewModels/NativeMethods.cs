@@ -10,11 +10,18 @@ namespace Caffeine.ViewModels
     using System.Runtime.InteropServices;
 
 #pragma warning disable SA1201 // Elements must appear in the correct order
+#pragma warning disable SA1307 // Accessible fields must begin with upper-case letter
 #pragma warning disable SA1600 // Elements must be documented
 #pragma warning disable SA1602 // Enumeration items must be documented
+    [ExcludeFromCodeCoverage]
     internal static class NativeMethods
     {
         public const int POWER_REQUEST_CONTEXT_VERSION = 0;
+
+        public const int WM_QUERYENDSESSION = 0x0011;
+        public const int ENDSESSION_CRITICAL = 0x40000000;
+
+        public static readonly Version Vista = new Version(6, 2);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern SafePowerRequestHandle PowerCreateRequest([In] ref REASON_CONTEXT Context);
@@ -33,12 +40,50 @@ namespace Caffeine.ViewModels
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         public static extern bool CloseHandle(IntPtr hObject);
+
+        [DllImport("user32.dll", ExactSpelling = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool GetLastInputInfo(ref LASTINPUTINFO plii);
+
+        [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool SetProcessShutdownParameters(
+            [MarshalAs(UnmanagedType.U4)] int dwLevel,
+            [MarshalAs(UnmanagedType.U4)] int dwFlags);
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShutdownBlockReasonCreate(
+            IntPtr hWnd,
+            string pwszReason);
+
+        [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool ShutdownBlockReasonDestroy(IntPtr hWnd);
     }
 
     internal enum POWER_REQUEST_CONTEXT
     {
         SimpleString = 1,
         DetailedString,
+    }
+
+    [ExcludeFromCodeCoverage]
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct LASTINPUTINFO
+    {
+        private static readonly int Size = Marshal.SizeOf(typeof(LASTINPUTINFO));
+
+        public static LASTINPUTINFO Default => new LASTINPUTINFO
+        {
+            cbSize = Size,
+        };
+
+        [MarshalAs(UnmanagedType.U4)]
+        public int cbSize;
+
+        [MarshalAs(UnmanagedType.U4)]
+        public int dwTime;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
@@ -62,5 +107,6 @@ namespace Caffeine.ViewModels
     }
 #pragma warning restore SA1602 // Enumeration items must be documented
 #pragma warning restore SA1600 // Elements must be documented
+#pragma warning restore SA1307 // Accessible fields must begin with upper-case letter
 #pragma warning restore SA1201 // Elements must appear in the correct order
 }

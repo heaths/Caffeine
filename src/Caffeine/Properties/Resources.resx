@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="CancelShutdownCaption" xml:space="preserve">
+    <value>Cancel shutdown</value>
+  </data>
   <data name="DisplayRequiredCaption" xml:space="preserve">
     <value>Keep display awake</value>
   </data>
@@ -125,6 +128,9 @@
   </data>
   <data name="PowerRequestReason" xml:space="preserve">
     <value>So...much...caffeine.</value>
+  </data>
+  <data name="SuspendShutdownCaption" xml:space="preserve">
+    <value>Suspend shutdown</value>
   </data>
   <data name="SystemRequiredCaption" xml:space="preserve">
     <value>Keep system awake</value>

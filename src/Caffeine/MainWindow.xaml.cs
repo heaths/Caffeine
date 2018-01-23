@@ -15,6 +15,7 @@ namespace Caffeine
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public partial class MainWindow : Window
     {
         private readonly MainViewModel viewModel;
@@ -23,23 +24,31 @@ namespace Caffeine
         /// <summary>
         /// Initializes a new instance of the <see cref="MainWindow"/> class.
         /// </summary>
-        [ExcludeFromCodeCoverage]
         public MainWindow()
         {
             InitializeComponent();
+
             viewModel = DataContext as MainViewModel;
+            if (viewModel != null)
+            {
+                viewModel.Handle = Handle;
+
+                var source = HwndSource.FromHwnd(Handle);
+                source.AddHook(new HwndSourceHook(viewModel.ProcessMessage));
+            }
         }
 
         /// <summary>
         /// Gets the native handle for this window.
         /// </summary>
-        [ExcludeFromCodeCoverage]
-        internal IntPtr Handle => LazyInitializer.EnsureInitialized(ref helper, () => new WindowInteropHelper(this)).Handle;
+        internal IntPtr Handle =>
+            LazyInitializer.EnsureInitialized(ref helper, () => new WindowInteropHelper(this)).EnsureHandle();
 
         /// <inheritdoc/>
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
+
             viewModel?.Dispose();
         }
     }

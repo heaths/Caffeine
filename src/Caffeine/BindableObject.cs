@@ -34,7 +34,8 @@ namespace Caffeine
         /// <param name="value">The new property value to compare.</param>
         /// <param name="comparer">The <see cref="IEqualityComparer{T}"/> to use for comparisons. The default is <see cref="EqualityComparer{T}.Default"/>.</param>
         /// <param name="propertyName">The name of the changed property. The default is the calling property.</param>
-        protected void SetProperty<T>(ref T field, T value, IEqualityComparer<T> comparer = null, [CallerMemberName] string propertyName = null)
+        /// <returns>A value indicating whether the <paramref name="field"/> was changed.</returns>
+        protected bool SetProperty<T>(ref T field, T value, IEqualityComparer<T> comparer = null, [CallerMemberName] string propertyName = null)
         {
             comparer = comparer ?? EqualityComparer<T>.Default;
 
@@ -42,7 +43,11 @@ namespace Caffeine
             {
                 field = value;
                 OnPropertyChanged(propertyName);
+
+                return true;
             }
+
+            return false;
         }
     }
 }
