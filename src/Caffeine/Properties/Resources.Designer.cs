@@ -131,5 +131,14 @@ namespace Caffeine.Properties {
                 return ResourceManager.GetString("TopMostCaption", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Waiting for shutdown request.
+        /// </summary>
+        internal static string WaitingCaption {
+            get {
+                return ResourceManager.GetString("WaitingCaption", resourceCulture);
+            }
+        }
     }
 }

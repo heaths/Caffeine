@@ -116,7 +116,7 @@ namespace Caffeine.ViewModels
             ThrowIfDisposed();
 
             Start();
-            await WaitAsync(cancellationToken);
+            await Task.Run(() => completionEvent.Wait(cancellationToken));
         }
 
         /// <summary>
@@ -127,16 +127,6 @@ namespace Caffeine.ViewModels
             ThrowIfDisposed();
 
             Close();
-        }
-
-        /// <summary>
-        /// Waits asynchronously for the <see cref="WaitHandle"/>.
-        /// </summary>
-        /// <param name="cancellationToken"><see cref="CancellationToken"/> to cancel waiting.</param>
-        /// <returns>A <see cref="Task"/> to await.</returns>
-        public async Task WaitAsync(CancellationToken cancellationToken = default(CancellationToken))
-        {
-            await Task.Run(() => completionEvent.Wait(cancellationToken));
         }
 
         /// <inheritdoc/>

@@ -21,21 +21,27 @@ namespace Caffeine.ViewModels
         public const int WM_QUERYENDSESSION = 0x0011;
         public const int ENDSESSION_CRITICAL = 0x40000000;
 
+        public const int TOKEN_QUERY = 0x0008;
+        public const int TOKEN_ADJUST_PRIVILEGES = 0x0020;
+
+        public const int SE_PRIVILEGE_ENABLED = 0x0002;
+        public static readonly string SE_SHUTDOWN_NAME = "SeShutdownPrivilege";
+
         public static readonly Version Vista = new Version(6, 2);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
-        public static extern SafePowerRequestHandle PowerCreateRequest([In] ref REASON_CONTEXT Context);
+        public static extern SafeObjectHandle PowerCreateRequest([In] ref REASON_CONTEXT Context);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool PowerSetRequest(
-            SafePowerRequestHandle PowerRequest,
+            SafeObjectHandle PowerRequest,
             [MarshalAs(UnmanagedType.U4)] PowerRequestType RequestType);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool PowerClearRequest(
-            SafePowerRequestHandle PowerRequest,
+            SafeObjectHandle PowerRequest,
             [MarshalAs(UnmanagedType.U4)] PowerRequestType RequestType);
 
         [DllImport("kernel32.dll", ExactSpelling = true, SetLastError = true)]
@@ -51,6 +57,15 @@ namespace Caffeine.ViewModels
             [MarshalAs(UnmanagedType.U4)] int dwLevel,
             [MarshalAs(UnmanagedType.U4)] int dwFlags);
 
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "InitiateSystemShutdownW", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool InitiateSystemShutdown(
+            string lpMachineName,
+            string lpMessage,
+            [MarshalAs(UnmanagedType.U4)] int dwTimeout,
+            [MarshalAs(UnmanagedType.Bool)] bool bForceAppsClosed,
+            [MarshalAs(UnmanagedType.Bool)] bool bRebootAfterShutdown);
+
         [DllImport("user32.dll", CharSet = CharSet.Unicode, ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShutdownBlockReasonCreate(
@@ -60,6 +75,30 @@ namespace Caffeine.ViewModels
         [DllImport("user32.dll", ExactSpelling = true, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool ShutdownBlockReasonDestroy(IntPtr hWnd);
+
+        [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool OpenProcessToken(
+            IntPtr ProcessHandle,
+            [MarshalAs(UnmanagedType.U4)] int DesiredAccess,
+            out SafeObjectHandle TokenHandle);
+
+        [DllImport("advapi32.dll", CharSet = CharSet.Unicode, EntryPoint = "LookupPrivilegeValueW", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool LookupPrivilegeValue(
+            string lpSystemName,
+            string lpName,
+            out LUID lpLuid);
+
+        [DllImport("advapi32.dll", ExactSpelling = true, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool AdjustTokenPrivileges(
+            SafeObjectHandle TokenHandle,
+            [MarshalAs(UnmanagedType.Bool)] bool DisableAllPrivileges,
+            [In] ref TOKEN_PRIVILEGES NewState,
+            [MarshalAs(UnmanagedType.U4)] int BufferLength,
+            IntPtr PreviousState,
+            [MarshalAs(UnmanagedType.U4)] out int ReturnLength);
     }
 
     internal enum POWER_REQUEST_CONTEXT
@@ -84,6 +123,30 @@ namespace Caffeine.ViewModels
 
         [MarshalAs(UnmanagedType.U4)]
         public int dwTime;
+    }
+
+    [ExcludeFromCodeCoverage]
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct LUID
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public int LuidLowPart;
+
+        [MarshalAs(UnmanagedType.I4)]
+        public int LuidHighPart;
+    }
+
+    [ExcludeFromCodeCoverage]
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct TOKEN_PRIVILEGES
+    {
+        [MarshalAs(UnmanagedType.U4)]
+        public int PrivilegeCount;
+
+        public LUID Luid;
+
+        [MarshalAs(UnmanagedType.U4)]
+        public int Attributes;
     }
 
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]

@@ -7,7 +7,9 @@ namespace Caffeine.ViewModels
 {
     using System;
     using System.ComponentModel;
+    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
+    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Provides system services.
@@ -61,6 +63,53 @@ namespace Caffeine.ViewModels
             if (!NativeMethods.SetProcessShutdownParameters(priority, 0))
             {
                 throw new Win32Exception();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Shutdown(bool restart = false)
+        {
+            EnablePrivilege(NativeMethods.SE_SHUTDOWN_NAME);
+
+            if (!NativeMethods.InitiateSystemShutdown(null, null, 0, false, restart))
+            {
+                throw new Win32Exception();
+            }
+        }
+
+        private void EnablePrivilege(string name)
+        {
+            if (!NativeMethods.OpenProcessToken(
+                Process.GetCurrentProcess().Handle,
+                NativeMethods.TOKEN_QUERY | NativeMethods.TOKEN_ADJUST_PRIVILEGES,
+                out var handle))
+            {
+                throw new Win32Exception();
+            }
+
+            using (handle)
+            {
+                var tkp = new TOKEN_PRIVILEGES
+                {
+                    PrivilegeCount = 1,
+                    Attributes = NativeMethods.SE_PRIVILEGE_ENABLED,
+                };
+
+                if (!NativeMethods.LookupPrivilegeValue(null, name, out tkp.Luid))
+                {
+                    throw new Win32Exception();
+                }
+
+                if (!NativeMethods.AdjustTokenPrivileges(
+                    handle,
+                    false,
+                    ref tkp,
+                    Marshal.SizeOf(tkp.GetType()),
+                    IntPtr.Zero,
+                    out _))
+                {
+                    throw new Win32Exception();
+                }
             }
         }
     }

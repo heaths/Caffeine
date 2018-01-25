@@ -15,7 +15,7 @@ namespace Caffeine.ViewModels
     [ExcludeFromCodeCoverage]
     internal sealed class PowerRequest : IPowerRequest
     {
-        private readonly SafePowerRequestHandle handle;
+        private readonly SafeObjectHandle handle;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PowerRequest"/> class.

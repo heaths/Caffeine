@@ -149,12 +149,39 @@ namespace Caffeine.ViewModels
         }
 
         [Fact]
-        public void SuspendShutdown_Changes_CountdownVisibility()
+        public void SuspendShutdown_Changes_WaitingVisibility()
         {
             var sut = new MainViewModel(Service);
+            Assert.Equal(Visibility.Collapsed, sut.WaitingVisibility);
+
+            Assert.PropertyChanged(sut, nameof(sut.WaitingVisibility), () => sut.SuspendShutdown = true);
+            Assert.Equal(Visibility.Visible, sut.WaitingVisibility);
+        }
+
+        [WpfFact]
+        public async Task SuspendShutdown_Changes_CountdownVisibility()
+        {
+            mockSystemService.SetupSequence(x => x.Ticks)
+                .Returns(1000)
+                .Returns(2000);
+            mockSystemService.Setup(x => x.GetLastInput())
+                .Returns(1000);
+
+            var sut = new MainViewModel(Service, Dispatcher.CurrentDispatcher)
+            {
+                Duration = TimeSpan.FromSeconds(1),
+            };
+            Assert.Equal(Visibility.Collapsed, sut.WaitingVisibility);
             Assert.Equal(Visibility.Collapsed, sut.CountdownVisibility);
 
-            Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.SuspendShutdown = true);
+            await Assert.PropertyChangedAsync(sut, nameof(sut.CountdownVisibility), async () =>
+            {
+                sut.SuspendShutdown = true;
+                Assert.Equal(Visibility.Visible, sut.WaitingVisibility);
+
+                await sut.StartAsync();
+            });
+            Assert.Equal(Visibility.Collapsed, sut.WaitingVisibility);
             Assert.Equal(Visibility.Visible, sut.CountdownVisibility);
         }
 
@@ -168,13 +195,22 @@ namespace Caffeine.ViewModels
             Assert.True(sut.CancelShutdown);
         }
 
-        [Fact]
-        public void CancelShutdown_Changes_CountdownVisibility()
+        [WpfFact]
+        public async Task CancelShutdown_Changes_CountdownVisibility()
         {
-            var sut = new MainViewModel(Service)
+            mockSystemService.SetupSequence(x => x.Ticks)
+                .Returns(1000)
+                .Returns(2000);
+            mockSystemService.Setup(x => x.GetLastInput())
+                .Returns(1000);
+
+            var sut = new MainViewModel(Service, Dispatcher.CurrentDispatcher)
             {
+                Duration = TimeSpan.FromSeconds(1),
                 SuspendShutdown = true,
             };
+
+            await sut.StartAsync();
             Assert.Equal(Visibility.Visible, sut.CountdownVisibility);
 
             Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.CancelShutdown = true);
@@ -186,32 +222,29 @@ namespace Caffeine.ViewModels
         {
             mockSystemService.SetupSequence(x => x.Ticks)
                 .Returns(1000)
-                .Returns(2000);
+                .Returns(2000)
+                .Returns(3000);
             mockSystemService.Setup(x => x.GetLastInput())
                 .Returns(1000);
 
-            var ticks = new List<TimeSpan>();
+            bool changed = false;
 
             var sut = new MainViewModel(Service, Dispatcher.CurrentDispatcher)
             {
-                Duration = TimeSpan.FromSeconds(1),
+                Duration = TimeSpan.FromSeconds(2),
+                SuspendShutdown = true,
             };
 
             sut.PropertyChanged += (source, args) =>
             {
                 if ("Countdown".Equals(args.PropertyName))
                 {
-                    ticks.Add(sut.Countdown);
+                    changed = true;
                 }
             };
 
-            sut.SuspendShutdown = true;
-            await sut.WaitAsync();
-
-            Assert.Collection(
-                ticks,
-                x => Assert.Equal(TimeSpan.FromSeconds(1), x),
-                x => Assert.Equal(TimeSpan.FromSeconds(0), x));
+            await sut.StartAsync();
+            Assert.True(changed);
         }
 
         [Fact]
@@ -256,6 +289,24 @@ namespace Caffeine.ViewModels
         }
 
         [Fact]
+        public void ProcessMessage_Cancelled_Handled()
+        {
+            const int WM_QUERYENDSESSION = 0x0011;
+
+            var sut = new MainViewModel(Service)
+            {
+                SuspendShutdown = true,
+                CancelShutdown = true,
+            };
+
+            var handled = false;
+            var actual = sut.ProcessMessage(IntPtr.Zero, WM_QUERYENDSESSION, IntPtr.Zero, IntPtr.Zero, ref handled);
+
+            Assert.Equal(IntPtr.Zero, actual);
+            Assert.True(handled);
+        }
+
+        [Fact]
         public void ProcessMessage_Critical()
         {
             const int WM_QUERYENDSESSION = 0x0011;
@@ -288,6 +339,37 @@ namespace Caffeine.ViewModels
 
             Assert.Equal(IntPtr.Zero, actual);
             Assert.False(handled);
+        }
+
+        [WpfFact]
+        public async Task Resumes_Countdown()
+        {
+            mockSystemService.SetupSequence(x => x.Ticks)
+                .Returns(1000)
+                .Returns(2000)
+                .Returns(3000)
+                .Returns(4000)
+                .Returns(5000);
+            mockSystemService.Setup(x => x.GetLastInput())
+                .Returns(1000);
+
+            var sut = new MainViewModel(Service, Dispatcher.CurrentDispatcher)
+            {
+                Duration = TimeSpan.FromSeconds(1),
+                SuspendShutdown = true,
+            };
+
+            var task = sut.StartAsync();
+            Assert.True(sut.IsStarted);
+
+            Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.CancelShutdown = true);
+            Assert.False(sut.IsStarted);
+
+            Assert.PropertyChanged(sut, nameof(sut.CountdownVisibility), () => sut.CancelShutdown = false);
+            Assert.True(sut.IsStarted);
+
+            await Task.WhenAll(task);
+            mockSystemService.Verify(x => x.Shutdown(false), Times.Once);
         }
     }
 }

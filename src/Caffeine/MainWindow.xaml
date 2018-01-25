@@ -132,6 +132,7 @@
         <CheckBox Content="{Binding SuspendShutdownCaption, Mode=OneWay}" IsChecked="{Binding SuspendShutdown}" Style="{StaticResource CaffeineCheckBox}"/>
         <StackPanel Visibility="{Binding ShutdownVisibility, Mode=OneWay}">
             <CheckBox Margin="{DynamicResource IconMargin}" Content="{Binding CancelShutdownCaption, Mode=OneWay}" IsChecked="{Binding CancelShutdown}"/>
+            <Label Margin="{DynamicResource IconMargin}" Content="{Binding WaitingCaption, Mode=OneWay}" Visibility="{Binding WaitingVisibility, Mode=OneWay}"/>
             <Label FontSize="40" HorizontalAlignment="Center" Content="{Binding CountdownFormatted, Mode=OneWay}" Visibility="{Binding CountdownVisibility, Mode=OneWay}"/>
         </StackPanel>
         <CheckBox Content="{Binding TopMostCaption, Mode=OneWay}" IsChecked="{Binding TopMost}" Margin="0,8,0,0"/>

@@ -1,4 +1,4 @@
-﻿// <copyright file="SafePowerRequestHandle.cs" company="Heath Stewart">
+﻿// <copyright file="SafeObjectHandle.cs" company="Heath Stewart">
 // Copyright (c) 2017 Heath Stewart
 // See the LICENSE.txt file in the project root for more information.
 // </copyright>
@@ -14,12 +14,12 @@ namespace Caffeine.ViewModels
     /// </summary>
     [ExcludeFromCodeCoverage]
     [SecurityCritical]
-    internal sealed class SafePowerRequestHandle : SafeHandleMinusOneIsInvalid
+    internal sealed class SafeObjectHandle : SafeHandleMinusOneIsInvalid
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="SafePowerRequestHandle"/> class.
+        /// Initializes a new instance of the <see cref="SafeObjectHandle"/> class.
         /// </summary>
-        public SafePowerRequestHandle()
+        public SafeObjectHandle()
             : base(true)
         {
         }

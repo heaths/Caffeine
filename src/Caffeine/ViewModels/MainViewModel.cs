@@ -6,7 +6,6 @@
 namespace Caffeine.ViewModels
 {
     using System;
-    using System.Diagnostics;
     using System.Diagnostics.CodeAnalysis;
     using System.Globalization;
     using System.Runtime.CompilerServices;
@@ -36,6 +35,9 @@ namespace Caffeine.ViewModels
         private bool cancelShutdown;
         private TimeSpan countdown;
         private bool topMost;
+        private bool isStarted;
+        private bool isShutdownRequested;
+        private bool stopProcessingMessages;
         private IDisposable blockShutdown;
 
         /// <summary>
@@ -144,10 +146,10 @@ namespace Caffeine.ViewModels
             {
                 if (SetProperty(ref suspendShutdown, value))
                 {
-                    UpdateBlock();
-                    UpdateIdle();
+                    BlockShutdown();
 
                     OnPropertyChanged(nameof(ShutdownVisibility));
+                    OnPropertyChanged(nameof(WaitingVisibility));
                     OnPropertyChanged(nameof(CountdownVisibility));
                 }
             }
@@ -169,8 +171,9 @@ namespace Caffeine.ViewModels
             {
                 if (SetProperty(ref cancelShutdown, value))
                 {
-                    UpdateIdle();
+                    BlockShutdown();
 
+                    OnPropertyChanged(nameof(WaitingVisibility));
                     OnPropertyChanged(nameof(CountdownVisibility));
                 }
             }
@@ -192,13 +195,26 @@ namespace Caffeine.ViewModels
         /// Gets the <see cref="Visibility"/> for the countdown timer based on <see cref="SuspendShutdown"/> and <see cref="CancelShutdown"/>.
         /// </summary>
         public Visibility CountdownVisibility =>
-            ShouldSuspendShutdown ? Visibility.Visible : Visibility.Collapsed;
+            ShouldSuspendShutdown && IsShutdownRequested ? Visibility.Visible : Visibility.Collapsed;
+
+        /// <summary>
+        /// Gets the <see cref="Visibility"/> of the <see cref="WaitingCaption"/> label.
+        /// </summary>
+        public Visibility WaitingVisibility =>
+            (ShouldSuspendShutdown && !IsShutdownRequested) ? Visibility.Visible : Visibility.Collapsed;
+
+        /// <summary>
+        /// Gets the caption for the "Waiting for shutdown request" label.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        public string WaitingCaption => Resources.WaitingCaption;
 
         /// <summary>
         /// Gets the duration for idle detection.
         /// </summary>
         public TimeSpan Countdown
         {
+            [ExcludeFromCodeCoverage]
             get => countdown;
             private set
             {
@@ -231,6 +247,24 @@ namespace Caffeine.ViewModels
         public string TopMostCaption => Resources.TopMostCaption;
 
         /// <summary>
+        /// Gets or sets a value indicating whether the <see cref="Countdown"/> has started.
+        /// </summary>
+        public bool IsStarted
+        {
+            get => isStarted;
+            set
+            {
+                IsShutdownRequested = value;
+
+                if (SetProperty(ref isStarted, value))
+                {
+                    OnPropertyChanged(nameof(WaitingVisibility));
+                    OnPropertyChanged(nameof(CountdownVisibility));
+                }
+            }
+        }
+
+        /// <summary>
         /// Gets a value indicating whether this object is disposed.
         /// </summary>
         public bool IsDisposed
@@ -240,6 +274,12 @@ namespace Caffeine.ViewModels
         }
 
         private bool ShouldSuspendShutdown => SuspendShutdown && !CancelShutdown;
+
+        private bool IsShutdownRequested
+        {
+            get => isShutdownRequested;
+            set => isShutdownRequested = value || isShutdownRequested;
+        }
 
         /// <inheritdoc/>
         public void Dispose()
@@ -259,14 +299,22 @@ namespace Caffeine.ViewModels
         /// <returns>The appropriate return value depends on the particular message.</returns>
         public IntPtr ProcessMessage(IntPtr handle, int message, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            switch (message)
+            if (!stopProcessingMessages)
             {
-                case NativeMethods.WM_QUERYENDSESSION
-                when lParam.ToInt32() != NativeMethods.ENDSESSION_CRITICAL && ShouldSuspendShutdown:
-                    Debug.WriteLine("Blocking shutdown request");
+                switch (message)
+                {
+                    case NativeMethods.WM_QUERYENDSESSION
+                    when lParam.ToInt32() != NativeMethods.ENDSESSION_CRITICAL && SuspendShutdown:
+                        IsShutdownRequested = true;
 
-                    handled = true;
-                    return IntPtr.Zero;
+                        if (!CancelShutdown)
+                        {
+                            Start();
+                        }
+
+                        handled = true;
+                        return IntPtr.Zero;
+                }
             }
 
             handled = false;
@@ -274,12 +322,18 @@ namespace Caffeine.ViewModels
         }
 
         /// <summary>
-        /// Wait for the <see cref="IdleService"/> to raise the <see cref="IdleService.Elapsed"/> event.
+        /// Starts the <see cref="IdleService"/> and waits till the <see cref="IdleService.Elapsed"/> event is raised.
         /// </summary>
         /// <param name="cancellationToken"><see cref="CancellationToken"/> to cancel waiting.</param>
         /// <returns>A <see cref="Task"/> to await.</returns>
-        public async Task WaitAsync(CancellationToken cancellationToken = default(CancellationToken)) =>
-            await idleService.WaitAsync(cancellationToken);
+        public async Task StartAsync(CancellationToken cancellationToken = default(CancellationToken))
+        {
+            ThrowIfDisposed();
+
+            IsStarted = true;
+
+            await idleService.StartAsync(cancellationToken);
+        }
 
         /// <summary>
         /// Disposes this object.
@@ -299,18 +353,44 @@ namespace Caffeine.ViewModels
             }
         }
 
+        private void BlockShutdown()
+        {
+            if (blockShutdown != null)
+            {
+                blockShutdown.Dispose();
+                blockShutdown = null;
+            }
+
+            if (SuspendShutdown)
+            {
+                blockShutdown = systemService.BlockShutdown(Handle, Resources.PowerRequestReason);
+            }
+
+            if (ShouldSuspendShutdown && IsShutdownRequested)
+            {
+                Start();
+            }
+            else
+            {
+                Stop();
+            }
+        }
+
         private void EnsurePowerRequest() =>
             LazyInitializer.EnsureInitialized(ref powerRequest, () => systemService.CreatePowerRequest(Resources.PowerRequestReason));
 
         private void OnElapsed(object source, TimerEventArgs args)
         {
-            // TODO: Initiate shutdown after preventing MainViewModel from suspending or canceling it.
+            Stop();
+
+            stopProcessingMessages = true;
+            systemService.Shutdown();
         }
 
         private void OnTick(object source, TimerEventArgs args)
         {
-            Action callback = () => Countdown = args.TimeSpan;
-            dispatcher?.BeginInvoke(callback, DispatcherPriority.Render);
+            void SetCoundown() => Countdown = args.TimeSpan;
+            dispatcher?.BeginInvoke((Action)SetCoundown, DispatcherPriority.Render);
         }
 
         private void SetPowerRequest(PowerRequestType type, ref bool field, bool value, [CallerMemberName] string propertyName = null)
@@ -335,38 +415,30 @@ namespace Caffeine.ViewModels
             }
         }
 
+        private void Start()
+        {
+            ThrowIfDisposed();
+
+            IsStarted = true;
+
+            idleService.Start();
+        }
+
+        private void Stop()
+        {
+            ThrowIfDisposed();
+
+            idleService.Stop();
+
+            IsStarted = false;
+            Countdown = Duration;
+        }
+
         private void ThrowIfDisposed()
         {
             if (IsDisposed)
             {
                 throw new ObjectDisposedException(nameof(MainViewModel));
-            }
-        }
-
-        private void UpdateBlock()
-        {
-            if (blockShutdown != null)
-            {
-                blockShutdown.Dispose();
-                blockShutdown = null;
-            }
-
-            if (ShouldSuspendShutdown)
-            {
-                blockShutdown = systemService.BlockShutdown(Handle, Resources.PowerRequestReason);
-            }
-        }
-
-        private void UpdateIdle()
-        {
-            if (ShouldSuspendShutdown)
-            {
-                idleService.Start();
-            }
-            else
-            {
-                idleService.Stop();
-                Countdown = Duration;
             }
         }
     }

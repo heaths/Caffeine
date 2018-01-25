@@ -77,7 +77,7 @@
     <Compile Include="ViewModels\NativeMethods.cs" />
     <Compile Include="ViewModels\PowerRequest.cs" />
     <Compile Include="ViewModels\PowerRequestType.cs" />
-    <Compile Include="ViewModels\SafePowerRequestHandle.cs" />
+    <Compile Include="ViewModels\SafeObjectHandle.cs" />
     <Compile Include="ViewModels\SystemService.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

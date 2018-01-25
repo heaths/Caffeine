@@ -55,5 +55,12 @@ namespace Caffeine.ViewModels
         /// <exception cref="ArgumentOutOfRangeException"><paramref name="priority"/> is less than 256 or greater than 1023.</exception>
         /// <exception cref="Win32Exception">A Windows error occured.</exception>
         void SetShutdownParameters(int priority);
+
+        /// <summary>
+        /// Initiates a system shutdown.
+        /// </summary>
+        /// <param name="restart">A value indicating whether to restart the machine after shutdown.</param>
+        /// <exception cref="Win32Exception">A Windows error occured.</exception>
+        void Shutdown(bool restart = false);
     }
 }

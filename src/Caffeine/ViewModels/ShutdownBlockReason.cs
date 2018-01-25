@@ -15,6 +15,8 @@ namespace Caffeine.ViewModels
     [ExcludeFromCodeCoverage]
     internal class ShutdownBlockReason : IDisposable
     {
+        private static readonly IntPtr InvalidHandle = new IntPtr(-1);
+
         private readonly ISystemService systemService;
         private readonly IntPtr handle;
 
@@ -29,7 +31,7 @@ namespace Caffeine.ViewModels
             this.systemService = systemService;
             this.handle = handle;
 
-            if (IsSupported && !NativeMethods.ShutdownBlockReasonCreate(handle, reason))
+            if (IsSupported && IsValid && !NativeMethods.ShutdownBlockReasonCreate(handle, reason))
             {
                 throw new Win32Exception();
             }
@@ -51,6 +53,8 @@ namespace Caffeine.ViewModels
         private bool IsSupported =>
             systemService.OSVersion != null && systemService.OSVersion >= NativeMethods.Vista;
 
+        private bool IsValid => handle != InvalidHandle;
+
         /// <inheritdoc/>
         public void Dispose()
         {
@@ -60,7 +64,7 @@ namespace Caffeine.ViewModels
 
         private void Cancel()
         {
-            if (IsSupported && !NativeMethods.ShutdownBlockReasonDestroy(handle))
+            if (IsSupported && IsValid && !NativeMethods.ShutdownBlockReasonDestroy(handle))
             {
                 throw new Win32Exception();
             }

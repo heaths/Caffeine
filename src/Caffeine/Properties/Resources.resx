@@ -141,4 +141,7 @@
   <data name="TopMostCaption" xml:space="preserve">
     <value>Keep this window on top of others</value>
   </data>
+  <data name="WaitingCaption" xml:space="preserve">
+    <value>Waiting for shutdown request</value>
+  </data>
 </root>
