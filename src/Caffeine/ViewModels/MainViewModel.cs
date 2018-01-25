@@ -345,6 +345,8 @@ namespace Caffeine.ViewModels
             {
                 if (disposing)
                 {
+                    idleService.Dispose();
+
                     blockShutdown?.Dispose();
                     powerRequest?.Dispose();
                 }

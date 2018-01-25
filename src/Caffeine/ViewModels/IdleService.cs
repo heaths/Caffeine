@@ -144,7 +144,11 @@ namespace Caffeine.ViewModels
         {
             if (!IsDisposed)
             {
-                Close();
+                if (disposing)
+                {
+                    Close();
+                    completionEvent.Dispose();
+                }
 
                 IsDisposed = true;
             }
