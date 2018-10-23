@@ -42,13 +42,6 @@ jobs:
       platform: $(BuildPlatform)
       runInParallel: true
 
-  - powershell: >
-      write-host '##vso[task.setvariable variable=BuildVersion;isOutput=true]$(BuildVersion)'
-      write-host '##vso[task.setvariable variable=BuildVersionSimple;isOutput=true]$(BuildVersionSimple)'
-      write-host '##vso[task.setvariable variable=CloudBuildNumber;isOutput=true]$(CloudBuildNumber)'
-    displayName: Set versions
-    name: Version
-
   - task: CopyFiles@2
     displayName: Copy build artifacts
     inputs:
@@ -68,12 +61,6 @@ jobs:
 
 - job: Publish
   dependsOn: Build
-  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
-
-  variables:
-    BuildVersion: $[dependencies.Build.output['Version.BuildVersion']]
-    BuildVersionSimple: $[dependencies.Build.output['Version.BuildVersionSimple']]
-    CloudBuildNumber: $[dependencies.Build.output['Version.CloudBuildNumber']]
 
   steps:
   - checkout: none
@@ -107,10 +94,8 @@ jobs:
     displayName: Publish build artifacts to GitHub
     inputs:
       githubEndpoint: GitHub
-      githubReleaseAsset: |
-        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
-        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
+      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\(*.exe|*.zip)
       githubReleaseDraft: false
-      githubReleaseTitle: v$(CloudBuildNumber)
+      githubReleaseTitle: v$(Build.BuildNumber)
       githubRepository: heaths/Caffeine
-      githubTag: v$(BuildVersionSimple)
+      githubTag: v$(Build.BuildNumber)
