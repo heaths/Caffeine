@@ -1,0 +1,98 @@
+# Copyright (c) 2017 Heath Stewart
+# See the LICENSE.txt file in the project root for more information.
+
+trigger:
+- master
+
+variables:
+  BuildConfiguration: Release
+  BuildPlatform: Any CPU
+  Solution: Caffeine.sln
+
+jobs:
+- job: Build
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - checkout: self
+    clean: true
+    lfs: true
+
+  - task: VisualStudioTestPlatformInstaller@1
+    displayName: Install VSTest
+
+  - task: NuGetCommand@2
+    displayName: Restore packages
+    inputs:
+      restoreSolution: $(Solution)
+
+  - task: VSBuild@1
+    displayName: Build solution
+    inputs:
+      configuration: $(BuildConfiguration)
+      maximumCpuCount: true
+      platform: $(BuildPlatform)
+      solution: $(Solution)
+
+  - task: VSTest@2
+    displayName: Test solution
+    inputs:
+      codeCoverageEnabled: true
+      configuration: $(BuildConfiguration)
+      platform: $(BuildPlatform)
+      runInParallel: true
+
+  - task: CopyFiles@2
+    displayName: Copy build artifacts
+    inputs:
+      cleanTargetFolder: true
+      contents: |
+        LICENSE.txt
+        README.md
+        src\**\bin\$(BuildConfiguration)\**
+      sourceFolder: $(Build.SourcesDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
+
+  - task: PublishBuildArtifacts@1
+    displayName: Publish build artifacts
+    inputs:
+      artifactName: drop
+      pathToPublish: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
+
+- job: Publish
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: Download build artifacts
+    inputs:
+      artifactName: drop
+      downloadPath: $(System.DefaultWorkingDirectory)
+
+  - task: CopyFiles@2
+    displayName: Copy build artifacts
+    inputs:
+      contents: |
+        LICENSE.txt
+        README.md
+        src\**\*.exe
+        src\**\*.exe.config
+        src\**\*.pdb
+      flattenFolders: true
+      sourceFolder: $(System.DefaultWorkingDirectory)
+      targetFolder: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
+
+  - task: ArchiveFiles@2
+    displayName: Archive build artifacts
+    inputs:
+      archiveFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\Caffeine.zip
+      rootFolderOrFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
+
+  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
+    displayName: Publish build artifacts to GitHub
+    inputs:
+      githubEndpoint: GitHub
+      githubReleaseAsset: |
+        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
+        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
+      githubRepository: heaths/Caffeine
