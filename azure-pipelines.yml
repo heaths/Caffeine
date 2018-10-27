@@ -59,8 +59,31 @@ jobs:
       artifactName: drop
       pathToPublish: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
 
+  - script: |
+      echo ##vso[task.setvariable variable=GitBuildVersion;isOutput=true]%GitBuildVersion%
+      echo ##vso[task.setvariable variable=GitBuildVersionSimple;isOutput=true]%GitBuildVersionSimple%
+      echo ##vso[task.setvariable variable=GitCommitId;isOutput=true]%GitCommitId%
+      echo ##vso[task.setvariable variable=GitCommitIdShort;isOutput=true]%GitCommitIdShort%
+      echo ##vso[task.setvariable variable=NuGetPackageVersion;isOutput=true]%NuGetPackageVersion%
+      echo ##vso[task.setvariable variable=PublicRelease;isOutput=true]%PublicRelease%
+    displayName: Set variables
+    name: vars
+    env:
+      GitCommitId: $(NBGV_GitCommitId)
+      GitCommitIdShort: $(NBGV_GitCommitIdShort)
+      NuGetPackageVersion: $(NBGV_NuGetPackageVersion)
+      PublicRelease: $(NBGV_PublicRelease)
+
 - job: Publish
   dependsOn: Build
+
+  variables:
+    GitBuildVersion: $[dependencies.Build.outputs['vars.GitBuildVersion']]
+    GitBuildVersionSimple: $[dependencies.Build.outputs['vars.GitBuildVersionSimple']]
+    GitCommitId: $[dependencies.Build.outputs['vars.GitCommitId']]
+    GitCommitIdShort: $[dependencies.Build.outputs['vars.GitCommitIdShort']]
+    NuGetPackageVersion: $[dependencies.Build.outputs['vars.NuGetPackageVersion']]
+    PublicRelease: $[dependencies.Build.outputs['vars.PublicRelease']]
 
   steps:
   - checkout: none
@@ -90,12 +113,23 @@ jobs:
       archiveFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\Caffeine.zip
       rootFolderOrFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
 
+  # Merge into one task when https://github.com/marceloavf/github-tools-vsts/issues/34 is fixed,
   - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
-    displayName: Publish build artifacts to GitHub
+    displayName: Publish executable artifacts to GitHub
     inputs:
       githubEndpoint: GitHub
-      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\(*.exe|*.zip)
+      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
       githubReleaseDraft: false
-      githubReleaseTitle: v$(Build.BuildNumber)
+      githubReleaseTitle: v$(GitBuildVersion)
       githubRepository: heaths/Caffeine
-      githubTag: v$(Build.BuildNumber)
+      githubTag: v$(GitBuildVersion)
+      
+  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
+    displayName: Publish archive artifacts to GitHub
+    inputs:
+      githubEndpoint: GitHub
+      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
+      githubReleaseDraft: false
+      githubReleaseTitle: v$(GitBuildVersion)
+      githubRepository: heaths/Caffeine
+      githubTag: v$(GitBuildVersion)
