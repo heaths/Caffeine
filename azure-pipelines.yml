@@ -76,6 +76,7 @@ jobs:
 
 - job: Publish
   dependsOn: Build
+  # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   variables:
     GitBuildVersion: $[dependencies.Build.outputs['vars.GitBuildVersion']]
@@ -119,7 +120,7 @@ jobs:
     inputs:
       githubEndpoint: GitHub
       githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
-      githubReleaseDraft: false
+      githubReleaseDraft: true
       githubReleaseTitle: v$(GitBuildVersion)
       githubRepository: heaths/Caffeine
       githubTag: v$(GitBuildVersion)
@@ -133,3 +134,5 @@ jobs:
       githubReleaseTitle: v$(GitBuildVersion)
       githubRepository: heaths/Caffeine
       githubTag: v$(GitBuildVersion)
+      githubReuseRelease: true
+      githubReuseDraftOnly: true
