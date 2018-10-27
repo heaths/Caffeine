@@ -76,7 +76,7 @@ jobs:
 
 - job: Publish
   dependsOn: Build
-  # condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
   variables:
     GitBuildVersion: $[dependencies.Build.outputs['vars.GitBuildVersion']]
@@ -120,10 +120,10 @@ jobs:
     inputs:
       githubEndpoint: GitHub
       githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
-      githubReleaseDraft: true
-      githubReleaseTitle: v$(GitBuildVersion)
+      githubReleaseDraft: false
+      githubReleaseTitle: v$(GitBuildVersionSimple)
       githubRepository: heaths/Caffeine
-      githubTag: v$(GitBuildVersion)
+      githubTag: v$(GitBuildVersionSimple)
       
   - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
     displayName: Publish archive artifacts to GitHub
@@ -131,8 +131,7 @@ jobs:
       githubEndpoint: GitHub
       githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
       githubReleaseDraft: false
-      githubReleaseTitle: v$(GitBuildVersion)
+      githubReleaseTitle: v$(GitBuildVersionSimple)
       githubRepository: heaths/Caffeine
-      githubTag: v$(GitBuildVersion)
+      githubTag: v$(GitBuildVersionSimple)
       githubReuseRelease: true
-      githubReuseDraftOnly: true
