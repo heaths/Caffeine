@@ -114,25 +114,14 @@ jobs:
       archiveFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\Caffeine.zip
       rootFolderOrFile: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)
 
-  # Merge into one task when https://github.com/marceloavf/github-tools-vsts/issues/34 is fixed,
-  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
-    displayName: Publish executable artifacts to GitHub
+  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@1
+    displayName: Publish build artifacts to GitHub
     inputs:
       githubEndpoint: GitHub
-      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
+      githubReleaseAsset: |
+        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.exe
+        $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
       githubReleaseDraft: false
       githubReleaseTitle: v$(GitBuildVersionSimple)
       githubRepository: heaths/Caffeine
       githubTag: v$(GitBuildVersionSimple)
-      
-  - task: marcelo-formentao.github-tools.github-release-publish-task.GitHubReleasePublish@0
-    displayName: Publish archive artifacts to GitHub
-    inputs:
-      githubEndpoint: GitHub
-      githubReleaseAsset: $(Build.ArtifactStagingDirectory)\bin\$(BuildConfiguration)\*.zip
-      githubReleaseDraft: false
-      githubReleaseTitle: v$(GitBuildVersionSimple)
-      githubRepository: heaths/Caffeine
-      githubTag: v$(GitBuildVersionSimple)
-      githubReuseRelease: true
-      githubReuseDraftOnly: false
